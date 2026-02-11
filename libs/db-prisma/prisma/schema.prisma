@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  OWNER
+  STAFF
+  CLIENT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String
+  role          UserRole  @default(CLIENT)
+  firstName     String?
+  lastName      String?
+  phone         String?
+  createdAt     DateTime  @default(now())
+
+  ownedBusiness Business?
+  staffProfile  Staff?
+  bookings      Booking[]
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  address     String?
+  phone       String?
+  ownerId     String   @unique
+  owner       User     @relation(fields: [ownerId], references: [id])
+  services    Service[]
+  staff       Staff[]
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+}
+
+model Staff {
+  id          String   @id @default(cuid())
+  name        String
+  colorCode   String?  @default("#000000")
+  userId      String?  @unique
+  user        User?    @relation(fields: [userId], references: [id])
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  services    StaffService[]
+  availabilities Availability[]
+  bookings    Booking[]
+  @@index([businessId])
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  price       Decimal  @db.Decimal(10, 2)
+  durationMin Int
+  businessId  String
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+  staff       StaffService[]
+  @@index([businessId])
+}
+
+model StaffService {
+  staffId     String
+  staff       Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  @@id([staffId, serviceId])
+}
+
+model Availability {
+  id          String   @id @default(cuid())
+  dayOfWeek   Int
+  startTime   String
+  endTime     String
+  isBreak     Boolean  @default(false)
+  staffId     String
+  staff       Staff    @relation(fields: [staffId], references: [id], onDelete: Cascade)
+  @@index([staffId])
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  startAt     DateTime
+  endAt       DateTime
+  status      BookingStatus @default(PENDING)
+  businessId  String
+  business    Business      @relation(fields: [businessId], references: [id])
+  staffId     String
+  staff       Staff         @relation(fields: [staffId], references: [id])
+  serviceId   String
+  service     Service       @relation(fields: [serviceId], references: [id])
+  clientId    String
+  client      User          @relation(fields: [clientId], references: [id])
+  createdAt   DateTime      @default(now())
+  @@index([businessId])
+  @@index([startAt])
+}

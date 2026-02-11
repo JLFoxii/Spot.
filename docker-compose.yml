@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  # --- Base de Données Principale ---
+  postgres:
+    image: postgres:16-alpine
+    container_name: spot_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-spot_secure_pass}
+      POSTGRES_DB: ${DB_NAME:-spot_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- Interface de Gestion BDD (Optionnel) ---
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: spot_pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@spot.ks
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+
+  # --- Cache & Message Broker (Pour Jobs Asynchrones) ---
+  redis:
+    image: redis:alpine
+    container_name: spot_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+
+  # --- Mock Server Email (Pour tester les notifs) ---
+  mailpit:
+    image: axllent/mailpit
+    container_name: spot_mailpit
+    restart: always
+    ports:
+      - "8025:8025" # UI Web pour voir les mails
+      - "1025:1025" # Port SMTP pour NestJS
+
+volumes:
+  postgres_data:

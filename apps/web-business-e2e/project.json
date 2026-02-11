@@ -1,0 +1,10 @@
+{
+  "name": "web-business-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/web-business-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["web-business"],
+  "// targets": "to see all targets run: nx show project web-business-e2e --web",
+  "targets": {}
+}

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/models/business_model.dart';
+import 'booking_wizard_screen.dart';
 
 class BusinessDetailScreen extends StatelessWidget {
   final BusinessModel business;
@@ -28,7 +29,7 @@ class BusinessDetailScreen extends StatelessWidget {
                 child: Icon(Icons.store, size: 80, color: Colors.white),
               ),
             ),
-            
+
             // Business Info
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -56,7 +57,7 @@ class BusinessDetailScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Services Section
                   const Text(
                     "Services",
@@ -84,18 +85,20 @@ class BusinessDetailScreen extends StatelessWidget {
                           ),
                         ),
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("Service sélectionné : ${service.name}"),
-                              duration: const Duration(seconds: 1),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingWizardScreen(
+                                business: business,
+                              ),
                             ),
                           );
                         },
                       ),
-                    )).toList(),
-                  
+                    )),
+
                   const SizedBox(height: 24),
-                  
+
                   // Staff Section
                   const Text(
                     "Notre équipe",
@@ -123,6 +126,40 @@ class BusinessDetailScreen extends StatelessWidget {
                         ],
                       )).toList(),
                     ),
+
+                  const SizedBox(height: 32),
+
+                  // Global booking button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BookingWizardScreen(
+                              business: business,
+                            ),
+                          ),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue[800],
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        "Réserver",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

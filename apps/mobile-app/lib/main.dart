@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'features/booking/presentation/screens/home_screen.dart';
 
 void main() {
@@ -13,6 +14,16 @@ class SpotApp extends StatelessWidget {
     return MaterialApp(
       title: 'Spot.',
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('fr', 'FR'),
+        Locale('en'),
+      ],
+      locale: const Locale('fr', 'FR'),
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[50],

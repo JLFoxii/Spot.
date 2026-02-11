@@ -9,7 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
+  flutter_localizations:
+    sdk: flutter
+
   # Network
   dio: ^5.4.0
   
@@ -20,7 +22,7 @@ dependencies:
   get_it: ^7.6.7
   
   # Date formatting
-  intl: ^0.19.0
+  intl: ^0.20.2
   
   # JSON Serialization
   json_annotation: ^4.8.1

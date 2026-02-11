@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'features/booking/presentation/screens/home_screen.dart';
+import 'main_screen.dart';
 
 void main() {
   runApp(const SpotApp());
@@ -33,7 +33,7 @@ class SpotApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: const HomeScreen(),
+      home: const MainScreen(),
     );
   }
 }

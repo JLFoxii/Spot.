@@ -43,19 +43,19 @@ class BusinessSummary {
 
 class ServiceSummary {
   final String name;
-  final int durationMin;
+  final int? durationMin;
   final double price;
 
   ServiceSummary({
     required this.name,
-    required this.durationMin,
+    this.durationMin,
     required this.price,
   });
 
   factory ServiceSummary.fromJson(Map<String, dynamic> json) {
     return ServiceSummary(
       name: json['name'] as String,
-      durationMin: json['durationMin'] as int,
+      durationMin: json['durationMin'] as int?,
       price: double.parse(json['price'].toString()),
     );
   }

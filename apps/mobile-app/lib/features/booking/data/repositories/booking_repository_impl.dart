@@ -59,13 +59,9 @@ class BookingRepositoryImpl implements BookingRepository {
 
   @override
   Future<List<BookingModel>> getMyBookings() async {
-    try {
-      final response = await _dio.get('/bookings/me');
-      return (response.data as List)
-          .map((json) => BookingModel.fromJson(json))
-          .toList();
-    } catch (e) {
-      throw Exception('Impossible de charger vos réservations : $e');
-    }
+    final response = await _dio.get('/bookings/me');
+    return (response.data as List)
+        .map((json) => BookingModel.fromJson(json as Map<String, dynamic>))
+        .toList();
   }
 }

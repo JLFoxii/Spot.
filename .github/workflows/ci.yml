@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  nx-workspace:
+    name: Nx Workspace (Lint, Test, Build)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: npx nx run-many --target=lint --all
+
+      - name: Unit Tests
+        run: npx nx run-many --target=test --all
+
+      - name: Build
+        run: npx nx run-many --target=build --all
+
+  mobile:
+    name: Mobile (Flutter)
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: apps/mobile-app
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Static analysis
+        run: flutter analyze --fatal-warnings
+
+      - name: Run tests
+        run: flutter test --no-pub

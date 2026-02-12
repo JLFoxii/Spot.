@@ -26,6 +26,7 @@ dependencies:
   
   # JSON Serialization
   json_annotation: ^4.8.1
+  flutter_stripe: ^12.2.0
 
 dev_dependencies:
   flutter_test:

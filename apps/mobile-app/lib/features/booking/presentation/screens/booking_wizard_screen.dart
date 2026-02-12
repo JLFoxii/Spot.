@@ -1,8 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:intl/intl.dart';
 import '../../../auth/presentation/screens/login_screen.dart';
+import '../../../payment/data/repositories/payment_repository_impl.dart';
+import '../../../payment/domain/repositories/payment_repository.dart';
 import '../../data/models/business_model.dart';
 import '../../data/repositories/booking_repository_impl.dart';
 import '../../domain/repositories/booking_repository.dart';
@@ -18,6 +21,7 @@ class BookingWizardScreen extends StatefulWidget {
 
 class _BookingWizardScreenState extends State<BookingWizardScreen> {
   final BookingRepository _repository = BookingRepositoryImpl();
+  final PaymentRepository _paymentRepository = PaymentRepositoryImpl();
   final _storage = const FlutterSecureStorage();
 
   int _currentStep = 0;
@@ -92,6 +96,23 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
     setState(() => _submitting = true);
 
     try {
+      // 1. Créer le SetupIntent via l'API
+      final clientSecret = await _paymentRepository.createSetupIntent();
+
+      // 2. Initialiser le Payment Sheet Stripe
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          setupIntentClientSecret: clientSecret,
+          merchantDisplayName: 'Spot.',
+        ),
+      );
+
+      // 3. Afficher le Payment Sheet
+      await Stripe.instance.presentPaymentSheet();
+
+      if (!mounted) return;
+
+      // 4. Paiement validé -> créer la réservation
       await _repository.createBooking(
         businessId: widget.business.id,
         staffId: _selectedStaff!.id,
@@ -107,6 +128,14 @@ class _BookingWizardScreenState extends State<BookingWizardScreen> {
         ),
       );
       Navigator.of(context).popUntil((route) => route.isFirst);
+    } on StripeException catch (e) {
+      if (!mounted) return;
+      final message = e.error.code == FailureCode.Canceled
+          ? 'Paiement annulé'
+          : 'Erreur de paiement : ${e.error.localizedMessage}';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message), backgroundColor: Colors.red),
+      );
     } on DioException catch (e) {
       if (!mounted) return;
       final statusCode = e.response?.statusCode;

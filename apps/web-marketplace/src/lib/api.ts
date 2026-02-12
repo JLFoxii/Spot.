@@ -22,8 +22,9 @@ apiClient.interceptors.request.use((config) => {
 });
 
 // Pour les appels server-side (dans les Server Components)
+// NEXT_PUBLIC_ est accessible côté client ET serveur en Next.js
 export const serverApiClient = axios.create({
-  baseURL: 'http://localhost:3000/api/v1', // URL interne pour le serveur
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api/v1',
   headers: {
     'Content-Type': 'application/json',
   },

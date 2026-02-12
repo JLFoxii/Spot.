@@ -12,10 +12,13 @@ class ApiClient {
   }
 
   ApiClient._internal() {
-    // Gestion spécifique : Android Emulator utilise 10.0.2.2 pour localhost
-    final String baseUrl = Platform.isAndroid 
-        ? 'http://10.0.2.2:3000/api/v1' 
-        : 'http://localhost:3000/api/v1';
+    // URL injectable via --dart-define=API_URL=https://api.spot.ks/api/v1
+    const envUrl = String.fromEnvironment('API_URL');
+    final String baseUrl = envUrl.isNotEmpty
+        ? envUrl
+        : Platform.isAndroid
+            ? 'http://10.0.2.2:3000/api/v1'
+            : 'http://localhost:3000/api/v1';
 
     dio = Dio(BaseOptions(
       baseUrl: baseUrl,

@@ -30,6 +30,7 @@ model User {
   firstName     String?
   lastName      String?
   phone         String?
+  stripeCustomerId String? @unique
   createdAt     DateTime  @default(now())
 
   ownedBusiness Business?

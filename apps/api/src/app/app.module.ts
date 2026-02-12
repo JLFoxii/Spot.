@@ -5,6 +5,7 @@ import { BusinessModule } from './business/business.module';
 import { BookingModule } from './booking/booking.module';
 import { AuthModule } from './auth/auth.module';
 import { AvailabilityModule } from './availability/availability.module';
+import { PaymentModule } from './payment/payment.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -22,6 +23,7 @@ import { AppService } from './app.service';
     BusinessModule,
     BookingModule,
     AvailabilityModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,0 +1,7 @@
+{
+	email contact@spot.ks
+}
+
+:80 {
+	reverse_proxy api:3000
+}
